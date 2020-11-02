@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+require "nokogiri_rust"
+
+require "pry"
+Pry.start

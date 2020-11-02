@@ -1,20 +1,35 @@
 require "nokogiri_rust/version"
-require "rutie"
-require "thermite/config"
-require "fiddle"
-require "fiddle/import"
+require "ffi"
 
 module NokogiriRust
-  FFI_LIBRARY = begin
-    toplevel_dir = File.dirname(__dir__)
+  class HTML < FFI::AutoPointer
+    def self.release(ptr)
+      Binding.free(ptr)
+    end
 
-    config = Thermite::Config.new(
-      cargo_project_path: toplevel_dir,
-      ruby_project_path: toplevel_dir
-    )
+    def self.parse(html)
+      Binding.parse(html)
+    end
 
-    config.ruby_extension_path
+    def at_css(selector)
+      Binding.at_css(self, selector)
+    end
+
+    module Binding
+      extend FFI::Library
+      ffi_lib "target/debug/libnokogiri_rust.#{FFI::Platform::LIBSUFFIX}"
+
+      attach_function :free, :nokogiri_rust_free,
+        [HTML], :void
+      attach_function :parse, :nokogiri_rust_parse,
+        [:string], HTML
+      attach_function :at_css, :nokogiri_rust_at_css,
+        [HTML, :string], :string
+    end
   end
-
-  Fiddle::Function.new(Fiddle.dlopen(FFI_LIBRARY)["Init_nokogiri_rust"], [], Fiddle::TYPE_VOIDP).call
 end
+
+# big_shopping_html = File.read(File.expand_path("big_shopping.html", __dir__)).freeze; selector = ".eIuuYe a, a.EI11Pd, a.AGVhpb, a.GyDBsd, a.VQN8fd, a.VZTCjd, a.REX1ub, a.sHaywe".freeze; document = NokogiriRust::HTML.parse(big_shopping_html)
+# title = document.at_css(selector)
+
+# puts title

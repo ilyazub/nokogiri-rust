@@ -1,59 +1,64 @@
+use libc::c_char;
 use scraper::{Html, Selector};
+use std::ffi::{CStr, CString};
 
-#[macro_use]
-extern crate rutie;
+pub struct NokogiriRust {
+    document: Html,
+}
 
-#[macro_use]
-extern crate lazy_static;
-
-use rutie::{AnyObject, Class, Module, Object, RString, VerifiedObject, VM};
-
-wrappable_struct!(Html, HtmlWrapper, HTML_WRAPPER);
-
-class!(NokogiriRust);
-class!(Document);
-
-methods!(
-    NokogiriRust,
-    _itself,
-
-    fn html(html_string: RString) -> AnyObject {
-        Document::new_document(html_string)
-    }
-);
-
-methods!(
-    Document,
-    _itself,
-
-    fn new_document(html_string: RString) -> AnyObject {
-        let html = Html::parse_document(html_string.unwrap().to_str());
-
-        Class::from_existing("Document").wrap_data(html, &*HTML_WRAPPER)
+impl NokogiriRust {
+    fn parse(html: &str) -> Self {
+        NokogiriRust {
+            document: Html::parse_document(html),
+        }
     }
 
-    fn at_css(selector: RString) -> RString {
-        let result = _itself
-            .get_data(&*HTML_WRAPPER)
-            .select(&Selector::parse(selector.unwrap().to_str()).unwrap())
+    fn at_css(&self, selector: &str) -> String {
+        self.document
+            .select(&Selector::parse(selector).unwrap())
             .next()
             .unwrap()
-            .inner_html();
-
-        RString::new_utf8(&result)
+            .inner_html()
     }
-);
+}
 
-#[allow(non_snake_case)]
 #[no_mangle]
-pub extern "C" fn Init_nokogiri_rust() {
-    Module::from_existing("NokogiriRust").define(|klass| {
-        klass.def_self("HTML", html);
+pub extern "C" fn nokogiri_rust_parse(html: *const c_char) -> *mut NokogiriRust {
+    let html = unsafe {
+        assert!(!html.is_null());
+        CStr::from_ptr(html).to_str().unwrap()
+    };
 
-        let data_class = Class::from_existing("Object");
-        klass.define_nested_class("Document", Some(&data_class)).define(|nested_klass| {
-            nested_klass.def_self("new", new_document);
-            nested_klass.def("at_css", at_css);
-        });
-    });
+    Box::into_raw(Box::new(NokogiriRust::parse(&html)))
+}
+
+#[no_mangle]
+pub extern "C" fn nokogiri_rust_free(ptr: *mut NokogiriRust) {
+    if ptr.is_null() {
+        return;
+    }
+    unsafe {
+        Box::from_raw(ptr);
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn nokogiri_rust_at_css(
+    ptr: *const NokogiriRust,
+    selector: *const c_char,
+) -> *const c_char {
+    let nokogiri_rust = unsafe {
+        assert!(!ptr.is_null());
+        &*ptr
+    };
+
+    let selector = unsafe {
+        assert!(!selector.is_null());
+        CStr::from_ptr(selector)
+    };
+
+    let selector_str = selector.to_str().unwrap();
+    let result = nokogiri_rust.at_css(selector_str);
+
+    CString::new("result").unwrap().as_ptr()
 }

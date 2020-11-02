@@ -8,6 +8,5 @@ edition = "2018"
 crate-type=["cdylib"]
 
 [dependencies]
+libc = "*"
 scraper = "0.12.0"
-rutie = "0.8.1"
-lazy_static = "0.2.1"

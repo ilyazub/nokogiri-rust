@@ -17,7 +17,7 @@ module NokogiriRust
 
     module Binding
       extend FFI::Library
-      ffi_lib "target/debug/libnokogiri_rust.#{FFI::Platform::LIBSUFFIX}"
+      ffi_lib "target/release/libnokogiri_rust.#{FFI::Platform::LIBSUFFIX}"
 
       attach_function :free, :nokogiri_rust_free,
         [HTML], :void

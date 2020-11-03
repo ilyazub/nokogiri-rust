@@ -1,9 +1,13 @@
 use libc::c_char;
-use scraper::{Html, Selector};
+use scraper::{ElementRef, Html, Selector};
 use std::ffi::{CStr, CString};
 
 pub struct NokogiriRust {
     document: Html,
+}
+
+pub struct Node<'a> {
+    elementRef: ElementRef<'a>,
 }
 
 impl NokogiriRust {
@@ -13,12 +17,19 @@ impl NokogiriRust {
         }
     }
 
-    fn at_css(&self, selector: &str) -> String {
-        self.document
+    fn at_css(&self, selector: &str) -> Node {
+        Node::new(self
+            .document
             .select(&Selector::parse(selector).unwrap())
             .next()
-            .unwrap()
-            .inner_html()
+            .unwrap())
+    }
+}
+
+
+impl<'a> Node<'a> {
+    fn new(node: NodeRef<'a, Node>) -> Self {
+        ElementRef { node }
     }
 }
 
@@ -46,7 +57,7 @@ pub extern "C" fn nokogiri_rust_free(ptr: *mut NokogiriRust) {
 pub extern "C" fn nokogiri_rust_at_css(
     ptr: *const NokogiriRust,
     selector: *const c_char,
-) -> *const c_char {
+) -> *mut NokogiriRust {
     let nokogiri_rust = unsafe {
         assert!(!ptr.is_null());
         &*ptr
@@ -58,7 +69,9 @@ pub extern "C" fn nokogiri_rust_at_css(
     };
 
     let selector_str = selector.to_str().unwrap();
-    let result = nokogiri_rust.at_css(selector_str);
+    let node = nokogiri_rust.at_css(selector_str);
 
-    CString::new("result").unwrap().as_ptr()
+    Box::into_raw(Box::new(NokogiriRust::parse(&html)))
+    
+    // CString::new(result).unwrap().into_raw()
 }

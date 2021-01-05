@@ -8,14 +8,22 @@ task "benchmark" do
   ruby "benchmarks/nokogiri_benchmark.rb"
 end
 
-desc "Build Rust library in debug mode"
-task "extension:build:debug" do
-  sh "cargo rustc --lib -- -C link-args=-L/home/ilyazub/.rbenv/versions/2.6.3/lib"
+namespace :extension do
+  task :clean do
+    sh "cargo clean"
+  end
+
+  namespace :build do
+    desc "Build Rust library in debug mode"
+    task :debug do
+      sh "cargo rustc --lib -- -C link-args=-L/home/ilyazub/.rbenv/versions/2.7.2/lib"
+    end
+
+    desc "Build Rust library in debug mode"
+    task :release do
+      sh "cargo rustc --release --lib -- -C link-args=-L/home/ilyazub/.rbenv/versions/2.7.2/lib"
+    end
+  end
 end
 
-desc "Build Rust library in debug mode"
-task "extension:build:release" do
-  sh "cargo rustc --release --lib -- -C link-args=-L/home/ilyazub/.rbenv/versions/2.6.3/lib"
-end
-
-task default: "extension:build"
+task default: "extension:build:release"

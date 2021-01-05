@@ -1,4 +1,4 @@
-# NokogiriRust
+# nokogiri_rust
 
 Ruby FFI wrapper around [scraper crate](https://crates.io/crates/scraper) to be used instead of Nokogiri.
 
@@ -75,8 +75,12 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/ilyazu
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+Copyright (c) 2020-2021 The nokogiri_rust developers
+
+The `nokogiri_rust` is available as open source under the terms of the both the MIT License and the Apache License 2.0.
+
+See the [LICENSE-APACHE](LICENSE-APACHE) and [LICENSE-MIT](LICENSE-MIT) files for license details.
 
 ## Code of Conduct
 
-Everyone interacting in the NokogiriRust project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/ilyazub/nokogiri-rust/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the nokogiri_rust project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/ilyazub/nokogiri-rust/blob/master/CODE_OF_CONDUCT.md).

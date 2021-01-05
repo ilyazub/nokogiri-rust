@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.email = ["zaoooza92@gmail.com"]
 
   spec.summary = "Nokogiri in Rust"
-  spec.homepage = "https://github.com/ilyazub/nokogiri_rust"
+  spec.homepage = "https://github.com/ilyazub/nokogiri-rust"
   spec.license = "MIT OR Apache-2.0"
 
   spec.metadata["homepage_uri"] = spec.homepage

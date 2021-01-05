@@ -53,6 +53,7 @@ end
 # big_shopping_html = File.read(File.expand_path("big_shopping.html", __dir__))
 # selector = ".eIuuYe a, a.EI11Pd, a.AGVhpb, a.GyDBsd, a.VQN8fd, a.VZTCjd, a.REX1ub, a.sHaywe"
 # document = NokogiriRust::HTML.parse(big_shopping_html)
-# title = document.at_css(selector)
+# title = document.at_css(selector).text
 
 # puts title
+# => "Roblox Game eCard [Digital Download]"

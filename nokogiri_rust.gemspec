@@ -12,9 +12,9 @@ Gem::Specification.new do |spec|
 
   spec.metadata["homepage_uri"] = spec.homepage
 
-  spec.add_dependency "ffi"
+  spec.add_runtime_dependency "fiddle"
 
-  spec.add_development_dependency "pry", "~> 0.13.0"
+  spec.add_development_dependency "pry", "~> 0.14"
   spec.add_development_dependency "benchmark-ips"
   spec.add_development_dependency "nokogiri"
 

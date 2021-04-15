@@ -1,12 +1,13 @@
 [package]
 name = "nokogiri_rust"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Ilya Zub <zaoooza92@gmail.com>"]
 edition = "2018"
 
 [lib]
-crate-type=["cdylib"]
+name = "nokogiri_rust_ruby_lib"
+crate-type = ["cdylib"]
 
 [dependencies]
-libc = "*"
+rutie = "0.8.2"
 scraper = "0.12.0"

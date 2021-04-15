@@ -1,52 +1,20 @@
+require "fiddle"
 require "nokogiri_rust/version"
-require "ffi"
+
+Fiddle::Function.new(Fiddle.dlopen(NokogiriRust.lib_path)["Init_nokogiri_rust"], [], Fiddle::TYPE_VOIDP).call
 
 module NokogiriRust
-  class Node < FFI::AutoPointer
-    def self.release(ptr)
-      Binding.free(ptr)
-    end
-
-    def text
-      Binding.text(self)
-    end
-
-    module Binding
-      extend FFI::Library
-      ffi_lib "target/release/libnokogiri_rust.#{FFI::Platform::LIBSUFFIX}"
-
-      attach_function :free, :nokogiri_rust_element_ref_free,
-        [Node], :void
-
-      attach_function :text, :nokogiri_rust_element_ref_text,
-        [Node], :string
+  def self.operating_system
+    case RbConfig::CONFIG["host_os"].downcase
+    when /linux|bsd|solaris/ then "linux"
+    when /darwin/ then "macos"
+    when /mingw|mswin/ then "windows"
+    else "unknown"
     end
   end
 
-  class HTML < FFI::AutoPointer
-    def self.release(ptr)
-      Binding.free(ptr)
-    end
-
-    def self.parse(html)
-      Binding.parse(html)
-    end
-
-    def at_css(selector)
-      Binding.at_css(self, selector)
-    end
-
-    module Binding
-      extend FFI::Library
-      ffi_lib "target/release/libnokogiri_rust.#{FFI::Platform::LIBSUFFIX}"
-
-      attach_function :free, :nokogiri_rust_html_free,
-        [HTML], :void
-      attach_function :parse, :nokogiri_rust_html_parse,
-        [:string], HTML
-      attach_function :at_css, :nokogiri_rust_html_at_css,
-        [HTML, :string], Node
-    end
+  def self.lib_path
+    File.join(__dir__, [operating_system, "-ruby", RUBY_VERSION.split(".")[0...-1].join(".")].join(""))
   end
 end
 

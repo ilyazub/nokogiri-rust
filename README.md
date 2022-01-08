@@ -1,10 +1,10 @@
 # nokogiri_rust
 
-Ruby FFI wrapper around [scraper crate](https://crates.io/crates/scraper) to be used instead of Nokogiri.
+Ruby FFI wrapper around the [Scraper crate](https://crates.io/crates/scraper) and adapter for Nokogiri. `html5ever` instead of `libxml2`.
 
 Status: **proof of concept**.
 
-`NokogiriRust::HTML.at_css.text` is 60 times faster than Nokogiri. Of course, API of this library is not compatible with Nokogiri for now.
+`NokogiriRust::RubyNode#at_css#text` is 60 times faster than Nokogiri. Of course, API of this library is not compatible with Nokogiri for now.
 
 ```bash
 $ ruby benchmarks/nokogiri_benchmark.rb

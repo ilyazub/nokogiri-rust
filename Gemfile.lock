@@ -3,6 +3,7 @@ PATH
   specs:
     nokogiri_rust (0.1.0)
       fiddle
+      rutie (~> 0.0.4)
 
 GEM
   remote: https://rubygems.org/
@@ -12,14 +13,17 @@ GEM
     diff-lcs (1.4.4)
     fiddle (1.0.7)
     method_source (1.0.0)
-    mini_portile2 (2.5.0)
-    nokogiri (1.11.3)
-      mini_portile2 (~> 2.5.0)
+    mini_portile2 (2.6.1)
+    nokogiri (1.12.5)
+      mini_portile2 (~> 2.6.1)
       racc (~> 1.4)
     pry (0.14.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    racc (1.5.2)
+    pry-doc (1.2.0)
+      pry (~> 0.11)
+      yard (~> 0.9.11)
+    racc (1.6.0)
     rake (12.3.3)
     rspec (3.10.0)
       rspec-core (~> 3.10.0)
@@ -34,17 +38,22 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.2)
+    rutie (0.0.4)
+    webrick (1.7.0)
+    yard (0.9.27)
+      webrick (~> 1.7.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   benchmark-ips
-  nokogiri
+  nokogiri (~> 1.12)
   nokogiri_rust!
   pry (~> 0.14)
+  pry-doc (~> 1.2)
   rake (~> 12.0)
   rspec (~> 3.0)
 
 BUNDLED WITH
-   2.1.4
+   2.2.27

@@ -5,7 +5,7 @@ require 'rutie'
 # Fiddle::Function.new(Fiddle.dlopen(NokogiriRust.lib_path)["Init_nokogiri_rust"], [], Fiddle::TYPE_VOIDP).call
 
 module NokogiriRust
-  Rutie.new(:nokogiri_rust_ruby_lib).init 'Init_nokogiri_rust', __dir__
+  Rutie.new(:nokogiri_rust_ruby_lib, release: 'debug').init('Init_nokogiri_rust', __dir__)
 end
 
 # module NokogiriRust

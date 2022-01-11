@@ -1,7 +1,7 @@
 require 'bundler/gem_tasks'
 require 'rspec/core/rake_task'
 
-RSpec::Core::RakeTask.new(:spec, [] => ['extension:build:release'])
+RSpec::Core::RakeTask.new(:spec, [] => ['extension:build'])
 
 desc 'Benchmark Nokogiri against NokogiriRust'
 task :benchmark do

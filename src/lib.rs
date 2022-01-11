@@ -78,7 +78,7 @@ extern crate rutie;
 //     };
 // }
 
-#[derive(Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Node<'a> {
     element_ref: ElementRef<'a>,
 }
@@ -126,6 +126,26 @@ methods! {
 
         Module::from_existing("NokogiriRust").get_nested_class("RubyNode").wrap_data(node, &*NODE_WRAPPER)
     }
+
+    fn parse_and_show_text(html: RString, selector: RString) -> RString {
+        let html = html
+            .map_err(VM::raise_ex)
+            .unwrap()
+            .to_string();
+
+        let doc = &Html::parse_document(&html);
+        let doc_root = doc.root_element();
+
+        let selector = selector
+            .map_err(VM::raise_ex)
+            .unwrap()
+            .to_string();
+
+        let node = Node::new(doc_root).at_css(selector);
+        let text = node.text();
+
+        RString::new_utf8(text)
+    }
 }
 
 class!(RubyNode);
@@ -158,6 +178,7 @@ pub extern "C" fn Init_nokogiri_rust() {
     Module::new("NokogiriRust").define(|module| {
         module.define_nested_module("HTML").define(|module| {
             module.def_self("parse", parse);
+            module.def_self("parse_and_show_text", parse_and_show_text);
         });
 
         let data_class = Class::from_existing("Object");
@@ -174,15 +195,53 @@ pub extern "C" fn Init_nokogiri_rust() {
 fn test_at_css() {
     use std::fs;
 
-    let big_shopping_html = fs::read_to_string("./spec/fixtures/big_shopping.html")
+    let html = fs::read_to_string("./spec/fixtures/big_shopping.html")
         .expect("Something went wrong reading the file");
 
-    let doc = &Html::parse_document(&big_shopping_html);
+    let doc = Html::parse_document(&html);
     let doc_root = doc.root_element();
-    let node = Node::new(doc_root);
+    let doc_node = Node::new(doc_root);
 
     let selector = String::from(".eIuuYe a, a.EI11Pd, a.AGVhpb, a.GyDBsd, a.VQN8fd, a.VZTCjd, a.REX1ub, a.sHaywe");
-    let node = node.at_css(selector);
+    let node = doc_node.at_css(selector);
+    let title = node.text();
+
+    assert_eq!(title, "HP Omen by Obelisk Gaming Desktop Computer, 9th Generation Intel Core i9-9900K Processor, Nvidia GeForce RTX 2080 Super 8 GB, HyperX 32 GB Ram, 1 TB");
+}
+
+#[test]
+fn test_wrap_unwrap() {
+    use std::fs;
+
+    let html = fs::read_to_string("./spec/fixtures/big_shopping.html")
+        .expect("Something went wrong reading the file");
+
+    let doc = Html::parse_document(&html);
+    let doc_root = doc.root_element();
+    let doc_node = Node::new(doc_root);
+
+    let doc_node_wrapper: RubyNode = Module::from_existing("NokogiriRust").get_nested_class("RubyNode").wrap_data(doc_node.clone(), &*NODE_WRAPPER);
+    // let unwrapped_doc_node: &Node = doc_node_wrapper.get_data(&*NODE_WRAPPER);
+
+    // assert_eq!(doc_node.element_ref, unwrapped_doc_node.element_ref);
+}
+
+#[test]
+fn test_ruby_at_css() {
+    use std::fs;
+
+    let html = fs::read_to_string("./spec/fixtures/big_shopping.html")
+        .expect("Something went wrong reading the file");
+
+    let doc = Html::parse_document(&html);
+    let doc_root = doc.root_element();
+    let doc_node = Node::new(doc_root);
+
+    let doc_node_wrapper: RubyNode = Module::from_existing("NokogiriRust").get_nested_class("RubyNode").wrap_data(doc_node, &*NODE_WRAPPER);
+    let unwrapped_doc_node = doc_node_wrapper.get_data(&*NODE_WRAPPER);
+
+    let selector = String::from(".eIuuYe a, a.EI11Pd, a.AGVhpb, a.GyDBsd, a.VQN8fd, a.VZTCjd, a.REX1ub, a.sHaywe");
+    let node = unwrapped_doc_node.at_css(selector);
     let title = node.text();
 
     assert_eq!(title, "HP Omen by Obelisk Gaming Desktop Computer, 9th Generation Intel Core i9-9900K Processor, Nvidia GeForce RTX 2080 Super 8 GB, HyperX 32 GB Ram, 1 TB");

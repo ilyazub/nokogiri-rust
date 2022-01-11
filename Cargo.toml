@@ -18,3 +18,14 @@ debug = true
 opt-level = 0
 rpath = true
 debug-assertions = true
+
+[profile.dev.package.ego-tree]
+# Set the default for dependencies in Development mode.
+debug = true
+opt-level = 0
+
+[profile.dev]
+debug = true
+opt-level = 0
+rpath = true
+debug-assertions = true
